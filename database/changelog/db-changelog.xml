@@ -18,6 +18,9 @@
             <column name="first_name" type="varchar(255)"/>
             <column name="last_name" type="varchar(255)"/>
             <column name="role" type="varchar(25)"/>
+            <column name="confirmed" type="boolean" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
             <column name="email" type="varchar(255)">
                 <constraints unique="true" nullable="false"/>
             </column>
@@ -25,5 +28,29 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="215016032203" author="Andrii Moroz">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_verification_tokens"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_verification_tokens">
+            <column autoIncrement="true" computed="false" name="user_verification_token_id" type="bigint">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_user_verification_tokens__user_verification_token_id"/>
+            </column>
+            <column name="token" type="varchar(255)"/>
+            <column name="blind_user_id" type="bigint">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="expires_at" type="datetime"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="user_verification_tokens"
+                                 baseColumnNames="blind_user_id"
+                                 constraintName="fk_user_verification_tokens__blind_users"
+                                 referencedTableName="blind_users"
+                                 referencedColumnNames="blind_user_id"/>
     </changeSet>
 </databaseChangeLog>
